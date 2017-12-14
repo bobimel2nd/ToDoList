@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+<html lang="en-us">
+
+<head>
+
+  <meta charset="UTF-8">
+  <title>To Do App!</title>
+
+  <style>
+    #todo-item {
+      font-weight: 700;
+      font-size: 2em;
+    }
+  </style>
+</head>
+
+<body>
+    <img style="float" src="SpacemanBob.png">
+
+  <!-- Title -->
+  <h1 style="float">My To Do's!</h1>
+
+  <!-- Input Form -->
+  <form>
+    <span id="todo-item">To Do Item: <input id="to-do" type="text" ><button id="add-to-do">Add To Do</button><button id="Clear-to-do" >Clear All</button></span>
+  </form>
+
+  <hr>
+
+  <!-- To-Do List -->
+  <div id="to-dos"></div>
+
+  <!-- jQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  <!-- Script -->
+  <script>
+    //  ============================= START CODING BELOW! =============================================
+  $(document).ready(function() {
+    var toDoCount = 0;
+    var items = [];
+    getItems();
+  
+    function getItems() {
+      var temp = localStorage.getItem("items");
+      if (temp != null) items = $.parseJSON(temp);
+      for (var i=items.length-1; i>=0; i--) {
+        if (items[i] === "") items.splice(i,1)
+      }
+      for (var i=0; i<items.length; i++) {
+          addToDoItem(items[i], false);
+      }
+    }
+
+    $("#add-to-do").on("click", function(event) {
+      addToDoItem($("#to-do").val().trim(), true);
+    });
+
+    $("#Clear-to-do").on("click", function(event) {
+      // prevent form from submitting
+      localStorage.clear();
+      toDoCount = 0;
+      items = [];
+      localStorage.setItem("items", JSON.stringify(items));
+      $("#to-dos").html("")
+      event.preventDefault();
+    });
+
+    $(document).on("click", ".checkbox", function() {
+      var i = parseInt($(this).data("index"));
+      $("#item-"+i).remove();
+      items[i] = "";
+      localStorage.setItem("items", JSON.stringify(items));
+    });
+
+    function addToDoItem(newToDo, store) {
+      var p = $("<p>");
+      p.attr("id", "item-"+toDoCount)
+      p.text(" " + newToDo);
+      
+      if (store) {
+        items.push(newToDo);
+        localStorage.setItem("items", JSON.stringify(items));
+      }
+
+      var b = $("<button>");
+      b.data("index", toDoCount)
+      b.addClass("checkbox");
+      b.text("X");
+
+      p.prepend(b);
+      $("#to-dos").append(p);
+      $("#to-do").val("");
+
+      toDoCount++;
+    };
+  })
+  </script>
+
+</body>
+
+</html>
